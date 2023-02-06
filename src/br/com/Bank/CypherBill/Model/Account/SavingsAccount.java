@@ -72,7 +72,7 @@ public class SavingsAccount extends Account{
 					+super.toString();
 		}else {
 			return "\n__________________________________________\n\n"
-					+"Digital Savings account Legal Peerson successfully created!"
+					+"Digital Savings account Legal Person successfully created!"
 					+super.toString();
 		}
 	}

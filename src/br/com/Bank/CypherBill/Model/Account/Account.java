@@ -2,6 +2,7 @@ package br.com.Bank.CypherBill.Model.Account;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.math.BigDecimal;
 
 import br.com.Bank.CypherBill.Model.BankException.CypherBillException;
 import br.com.Bank.CypherBill.Model.Holders.Holder;
+import br.com.Bank.CypherBill.Model.Holders.PhysicalPerson;
 
 public abstract class Account implements AccountInterest{
 	private Holder holder;
@@ -16,14 +18,35 @@ public abstract class Account implements AccountInterest{
 	private int numberAccount;
 	private BigDecimal cash = new BigDecimal(0.0);
 	
-	private String pacth = "AccountProject\\src\\br\\com\\Bank\\CypherBill\\Model\\Account\\extract.txt";
+	private String pacth = "S:\\Projects\\Eclipse-projects\\AccountProject\\src\\br\\com\\Bank\\CypherBill\\Model\\Account\\extract.txt";
+	
+	File source = new File(pacth);
+	String sourceFolder = source.getParent();
+	boolean checked = new File(sourceFolder + "\\HolderExtract").mkdir();
+	private String targetFile;
 	
 	public Account(Holder holder, int agency, int numberAccount) {
+		
+		targetFile = sourceFolder + "\\HolderExtract\\"+holder.getName()+".txt";
+		
 		String agencyCharacters = Integer.toString(agency);
 		String numberAccountCharacters = Integer.toString(numberAccount);
 		if(holder == null || agencyCharacters.length() != 4 || numberAccountCharacters.length() != 8) {
 			throw new CypherBillException("error creating account: \"[Incorrect Data.]\"");
 		}
+		
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(targetFile))){
+			if(holder instanceof PhysicalPerson) {
+				bw.write("Name: "+holder.getName()+" - CPF: "+holder.dataHolder()+"\n");
+				bw.write("Agency: "+ agency+" - Number Account : "+ numberAccount+"\n\n");
+			}else {
+				bw.write("Institution Name: "+holder.getName()+" - CNPJ: "+holder.dataHolder()+"\n");
+				bw.write("Agency: "+ agency+" - Number Account : "+ numberAccount+"\n\n");
+			}
+		}catch(Exception e) {
+			throw new CypherBillException("[ERROR] error creating account");
+		}
+		
 		this.holder = holder;
 		this.agency = agency;
 		this.numberAccount = numberAccount;
@@ -61,7 +84,7 @@ public abstract class Account implements AccountInterest{
 	}
 	
 	protected void writeExtract(String message) {
-		try(BufferedWriter bw = new BufferedWriter(new FileWriter(pacth,true))) {
+		try(BufferedWriter bw = new BufferedWriter(new FileWriter(targetFile,true))) {
 			bw.write(message);
 			bw.newLine();
 		} catch (IOException e) {
@@ -69,7 +92,7 @@ public abstract class Account implements AccountInterest{
 		}
 	}
 	public void readExtract() {
-		try(BufferedReader br = new BufferedReader(new FileReader(pacth))) {
+		try(BufferedReader br = new BufferedReader(new FileReader(targetFile))) {
 			String reader = br.readLine();
 			while(reader != null) {
 				System.out.println(reader);
@@ -81,7 +104,7 @@ public abstract class Account implements AccountInterest{
 	}
 	
 	public void cleanExtract() {
-		try(BufferedWriter bw = new BufferedWriter(new FileWriter(pacth))) {
+		try(BufferedWriter bw = new BufferedWriter(new FileWriter(targetFile))) {
 			bw.write("");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -90,11 +113,20 @@ public abstract class Account implements AccountInterest{
 	
 	@Override
 	public String toString() {
-		return "\nAgency: "+ getAgency()
-				+" - Number Account : "+ getNumberAccount()
-				+"\nName: "+getHolder().getName()
-				+" - CPF: "+getHolder().dataHolder()
-				+"\n__________________________________________\n";
+		if(getHolder() instanceof PhysicalPerson) {
+			return "\nAgency: "+ getAgency()
+			+" - Number Account : "+ getNumberAccount()
+			+"\nName: "+getHolder().getName()
+			+" - CPF: "+getHolder().dataHolder()
+			+"\n__________________________________________\n";
+		}else {
+			return "\nAgency: "+ getAgency()
+			+" - Number Account : "+ getNumberAccount()
+			+"\nName: "+getHolder().getName()
+			+" - CNPJ: "+getHolder().dataHolder()
+			+"\n__________________________________________\n";
+		}
+		
 	}
 	
 }

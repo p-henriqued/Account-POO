@@ -1,7 +1,0 @@
-Deposit made from $1000,00
-Withdrawal made from $100,00
-Withdrawal made from $100,00
-Withdrawal made from $100,00
-Withdrawal with 2.0 interest made from $102,00
-Withdrawal with 2.5 interest made from $102,50
-Withdrawal with 3.0 interest made from $103,00

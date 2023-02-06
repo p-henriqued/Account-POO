@@ -86,7 +86,7 @@ public class CurrentAccount extends Account{
 					+super.toString();
 		}else {
 			return "\n__________________________________________\n\n"
-					+"Digital current account Legal Peerson successfully created!"
+					+"Digital current account Legal Person successfully created!"
 					+super.toString();
 		}
 	}
